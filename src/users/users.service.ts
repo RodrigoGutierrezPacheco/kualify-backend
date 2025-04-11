@@ -68,20 +68,30 @@ export class UsersService {
     }
   }
 
-  // Actualizar usuario
-  async update(id: number, updateData: Partial<User>): Promise<User> {
-    try {
-      await this.usersRepository.update(id, updateData);
-      const updatedUser = await this.findById(id);
-      if (!updatedUser) {
-        throw new Error('Usuario no encontrado');
-      }
-      return updatedUser;
-    } catch (error) {
-      throw new Error(`Error al actualizar usuario: ${error.message}`);
+// Actualizar usuario con hashing de password
+async update(id: number, updateData: Partial<User>): Promise<User> {
+  try {
+    // Si se está actualizando el password, lo hasheamos
+    if (updateData.password) {
+      const salt = await bcrypt.genSalt();
+      updateData.password = await bcrypt.hash(updateData.password, salt);
     }
-  }
 
+    await this.usersRepository.update(id, updateData);
+    const updatedUser = await this.findById(id);
+    
+    if (!updatedUser) {
+      throw new Error('Usuario no encontrado');
+    }
+    
+    return updatedUser;
+  } catch (error) {
+    if (error.code === '23505') { // Violación de constraint único
+      throw new ConflictException('El email ya está en uso');
+    }
+    throw new InternalServerErrorException('Error al actualizar usuario');
+  }
+}
   // Eliminar usuario
   async remove(id: number): Promise<void> {
     try {
