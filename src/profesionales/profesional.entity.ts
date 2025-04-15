@@ -1,13 +1,16 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
 
 @Entity()
 export class Profesional {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
+  @PrimaryGeneratedColumn()
+  id: number;
+
+  @Column({ unique: true })
+  email: string;
 
   @Column()
-  nombre: string;
+  password: string;
 
-  @Column('jsonb', { nullable: true })
-  documentos?: any[];
+  @Column()
+  profesionalname: string;
 }

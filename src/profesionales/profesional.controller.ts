@@ -13,34 +13,38 @@ import {
   NotFoundException,
   ConflictException,
 } from "@nestjs/common";
-import { UsersService } from "./users.service";
-import { CreateUserDto } from "./create-user.dto";
-import { UpdateUserDto } from "./update-user.dto";
+import { ProfesionalService } from "./profesional.service";
+import { CreateProfesionalDto } from "./create-profesional.dto";
+import { UptateProfesionalDto } from "./update-profesional.dto";
 import { Response } from "express";
-import { User } from "./user.entity";
+import { Profesional } from "./profesional.entity";
 
-@Controller("users")
-export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+@Controller("profesionals")
+export class ProfesionalsController {
+  constructor(private readonly profesionalsService: ProfesionalService) {}
 
   @Post()
-  async create(@Body() createUserDto: CreateUserDto, @Res() res: Response) {
+  async create(
+    @Body() createProfesionalDto: CreateProfesionalDto,
+    @Res() res: Response
+  ) {
     try {
-      const user = await this.usersService.create(createUserDto);
+      const profesional = await this.profesionalsService.create(
+        createProfesionalDto
+      );
       return res.status(HttpStatus.CREATED).json({
         statusCode: HttpStatus.CREATED,
-        message: "Usuario creado con éxito",
-        data: this.sanitizeUser(user),
+        message: "Profesional creado con éxito",
+        data: this.sanitizeProfesional(profesional),
       });
     } catch (error) {
       const status =
         error instanceof ConflictException
           ? HttpStatus.CONFLICT
           : HttpStatus.INTERNAL_SERVER_ERROR;
-
       return res.status(status).json({
         statusCode: status,
-        message: error.message || "Error al crear el usuario",
+        message: error.message || "Error al crear el profesional",
         error: error.name || "Internal Server Error",
       });
     }
@@ -49,16 +53,16 @@ export class UsersController {
   @Get()
   async findAll(@Res() res: Response) {
     try {
-      const users = await this.usersService.findAll();
+      const users = await this.profesionalsService.findAll();
       return res.status(HttpStatus.OK).json({
         statusCode: HttpStatus.OK,
-        message: "Usuarios obtenidos con éxito",
+        message: "Profesionales obtenidos con éxito",
         data: users,
       });
     } catch (error) {
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
         statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-        message: error.message || "Error al obtener los usuarios",
+        message: error.message || "Error al obtener los profesionales",
         error: "Internal Server Error",
       });
     }
@@ -67,13 +71,13 @@ export class UsersController {
   @Get(":id")
   async findOne(@Param("id", ParseIntPipe) id: number, @Res() res: Response) {
     try {
-      const user = await this.usersService.findById(id);
+      const user = await this.profesionalsService.findById(id);
       if (!user) {
-        throw new NotFoundException("Usuario no encontrado");
+        throw new NotFoundException("Profesional no encontrado");
       }
       return res.status(HttpStatus.OK).json({
         statusCode: HttpStatus.OK,
-        message: "Usuario obtenido con éxito",
+        message: "Profesional obtenido con éxito",
         data: user,
       });
     } catch (error) {
@@ -84,7 +88,7 @@ export class UsersController {
 
       return res.status(status).json({
         statusCode: status,
-        message: error.message || "Error al obtener el usuario",
+        message: error.message || "Error al obtener el profesional",
         error: error.name || "Internal Server Error",
       });
     }
@@ -93,15 +97,18 @@ export class UsersController {
   @Patch(":id")
   async update(
     @Param("id", ParseIntPipe) id: number,
-    @Body() updateUserDto: UpdateUserDto,
+    @Body() updateUserDto: UptateProfesionalDto,
     @Res() res: Response
   ) {
     try {
-      const updatedUser = await this.usersService.update(id, updateUserDto);
+      const updatedUser = await this.profesionalsService.update(
+        id,
+        updateUserDto
+      );
       return res.status(HttpStatus.OK).json({
         statusCode: HttpStatus.OK,
-        message: "Usuario actualizado con éxito",
-        data: this.sanitizeUser(updatedUser),
+        message: "Profesional actualizado con éxito",
+        data: this.sanitizeProfesional(updatedUser),
       });
     } catch (error) {
       const status = error.message.includes("no encontrado")
@@ -110,7 +117,7 @@ export class UsersController {
 
       return res.status(status).json({
         statusCode: status,
-        message: error.message || "Error al actualizar el usuario",
+        message: error.message || "Error al actualizar el Profesional",
         error: "Internal Server Error",
       });
     }
@@ -119,7 +126,7 @@ export class UsersController {
   @Delete(":id")
   async remove(@Param("id", ParseIntPipe) id: number, @Res() res: Response) {
     try {
-      await this.usersService.remove(id);
+      await this.profesionalsService.remove(id);
       return res.status(HttpStatus.OK).json({
         statusCode: HttpStatus.OK,
         message: "Usuario eliminado con éxito",
@@ -135,8 +142,8 @@ export class UsersController {
   }
 
   // Método para eliminar información sensible antes de enviar al cliente
-  private sanitizeUser(user: User): Partial<User> {
-    const { password, ...sanitizedUser } = user;
-    return sanitizedUser;
+  private sanitizeProfesional(profesional: Profesional): Partial<Profesional> {
+    const { password, ...sanitizeProfesional } = profesional;
+    return sanitizeProfesional;
   }
 }

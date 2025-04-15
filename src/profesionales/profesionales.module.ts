@@ -1,13 +1,13 @@
-import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { ProfesionalesService } from './profesionales.service';
-import { ProfesionalesController } from './profesionales.controller';
-import { Profesional } from './profesional.entity';
+import { Module } from "@nestjs/common";
+import { TypeOrmModule } from "@nestjs/typeorm";
+import { ProfesionalsController } from "./profesional.controller";
+import { ProfesionalService } from "./profesional.service";
+import { Profesional } from "./profesional.entity";
 
 @Module({
   imports: [TypeOrmModule.forFeature([Profesional])],
-  providers: [ProfesionalesService],
-  controllers: [ProfesionalesController],
-  exports: [ProfesionalesService] // Si otros módulos necesitan usar este servicio
+  providers: [ProfesionalService],
+  controllers: [ProfesionalsController],
+  exports: [ProfesionalService], // Si otros módulos necesitan usar este servicio
 })
 export class ProfesionalesModule {}

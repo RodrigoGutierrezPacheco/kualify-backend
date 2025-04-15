@@ -17,7 +17,5 @@ import { ConfigModule } from "@nestjs/config";
     ClientesModule,
     ConfigModule.forRoot(),
   ],
-  controllers: [AppController],
-  providers: [AppService],
 })
 export class AppModule {}
