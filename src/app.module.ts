@@ -8,6 +8,7 @@ import { ProfesionalesModule } from "./profesionales/profesionales.module";
 import { ClientesModule } from "./clientes/clientes.module";
 import { ConfigModule } from "@nestjs/config";
 import { AdminsModule } from './administradores/admins.module';
+import { CloudinaryModule } from "./cloudinary/cloudinaty.module";
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { AdminsModule } from './administradores/admins.module';
     ClientesModule,
     ConfigModule.forRoot(),
     AdminsModule,
+    CloudinaryModule
   ],
 })
 export class AppModule {}
