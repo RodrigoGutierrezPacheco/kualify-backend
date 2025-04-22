@@ -11,6 +11,7 @@ import {
   NotFoundException,
   Delete,
   Get,
+  Patch, // Nuevo decorador para operaciones de actualización parcial
 } from "@nestjs/common";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { DocumentoService } from "./documento.service";
@@ -59,5 +60,20 @@ export class DocumentosController {
   @Get()
   async listarDocumentos(@Param("id", ParseIntPipe) profesionalId: number) {
     return this.documentoService.obtenerDocumentosPorProfesional(profesionalId);
+  }
+
+  @Patch(":documentoId/auditar") // Nuevo endpoint para marcar como auditado
+  async marcarComoAuditado(
+    @Param("id", ParseIntPipe) profesionalId: number,
+    @Param("documentoId", ParseIntPipe) documentoId: number
+  ) {
+    try {
+      return await this.documentoService.marcarDocumentoComoAuditado(documentoId);
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      throw new BadRequestException("Error al actualizar el estado de auditoría");
+    }
   }
 }

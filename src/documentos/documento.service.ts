@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
-import { Documento } from "./documento.entity";
+import { Documento, DocumentoConProfesionalDto } from "./documento.entity";
 import { CloudinaryService } from "../cloudinary/cloudinary.service";
 import { Profesional } from "src/profesionales/profesional.entity";
 
@@ -85,7 +85,7 @@ export class DocumentoService {
 
   async obtenerDocumentosPorProfesional(
     profesionalId: number
-  ): Promise<Documento[]> {
+  ): Promise<DocumentoConProfesionalDto[]> {
     // Verificar si el profesional existe
     const profesional = await this.profesionalRepository.findOne({
       where: { id: profesionalId },
@@ -109,6 +109,31 @@ export class DocumentoService {
       );
     }
 
-    return documentos;
+    // Mapear a DTO
+    return documentos.map((documento) => ({
+      ...documento,
+      profesional: {
+        id: documento.profesional.id,
+        email: documento.profesional.email,
+        profesionalname: documento.profesional.profesionalname,
+      },
+    }));
+  }
+
+  async marcarDocumentoComoAuditado(documentoId: number): Promise<Documento> {
+    // Buscar el documento
+    const documento = await this.documentoRepository.findOne({
+      where: { id: documentoId },
+    });
+
+    if (!documento) {
+      throw new NotFoundException('Documento no encontrado');
+    }
+
+    // Actualizar el estado de auditoría
+    documento.auditado = true;
+
+    // Guardar los cambios
+    return await this.documentoRepository.save(documento);
   }
 }

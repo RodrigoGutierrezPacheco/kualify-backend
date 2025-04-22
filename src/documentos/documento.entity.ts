@@ -22,3 +22,12 @@ export class Documento {
   @JoinColumn({ name: 'profesional_id' })
   profesional: Profesional;
 }
+
+export class DocumentoConProfesionalDto{
+  id: number;
+  profesional:{
+    id:number;
+    email:string;
+    profesionalname:string
+  }
+}

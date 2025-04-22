@@ -13,3 +13,12 @@ export class UploadDocumentoDto {
   })
   tipo: typeof tiposDocumentosValidos[number];
 }
+
+// audit-documento.dto.ts
+export class AuditDocumentoDto {
+  id: number;
+  auditado: boolean;
+  fechaAuditoria?: Date;
+  tipo: string;
+  url: string;
+}
