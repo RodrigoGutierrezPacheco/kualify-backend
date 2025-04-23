@@ -12,14 +12,19 @@ import { CloudinaryModule } from "./cloudinary/cloudinaty.module";
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      isGlobal: true, // Esto hace que ConfigService esté disponible en todos los módulos
+      envFilePath: '.env', // Especifica la ruta de tu archivo .env
+    }),
     DatabaseModule,
     AuthModule,
     UsersModule,
     ProfesionalesModule,
     ClientesModule,
-    ConfigModule.forRoot(),
     AdminsModule,
     CloudinaryModule
   ],
+  controllers: [AppController],
+  providers: [AppService],
 })
 export class AppModule {}

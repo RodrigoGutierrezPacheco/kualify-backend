@@ -101,4 +101,17 @@ export class ProfesionalService {
       throw new Error(`Error al eliminar usuario: ${error.message}`);
     }
   }
+
+  // Buscar profesional por email (incluyendo password para validación)
+async findByEmail(email: string): Promise<Profesional | null> {
+  try {
+    return await this.profesionalRepository
+      .createQueryBuilder('profesional')
+      .where('profesional.email = :email', { email })
+      .addSelect('profesional.password') // Incluir el campo password que normalmente se excluye
+      .getOne();
+  } catch (error) {
+    throw new Error(`Error al buscar profesional por email: ${error.message}`);
+  }
+}
 }
