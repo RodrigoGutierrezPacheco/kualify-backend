@@ -58,8 +58,8 @@ export class DocumentosController {
   }
 
   @Get()
-  async listarDocumentos(@Param("id", ParseUUIDPipe) profesionalId: number) {
-    return this.documentoService.obtenerDocumentosPorProfesional(profesionalId.toString());
+  async listarDocumentos(@Param("id", ParseUUIDPipe) profesionalId: string) {
+    return this.documentoService.obtenerDocumentosPorProfesional(profesionalId);
   }
 
   @Patch(":documentoId/auditar") // Nuevo endpoint para marcar como auditado

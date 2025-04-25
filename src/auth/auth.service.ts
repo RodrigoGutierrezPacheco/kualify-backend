@@ -30,7 +30,7 @@ export class AuthService {
   async login(user: any, isProfessional: boolean) {
     const payload = { 
       email: user.email, 
-      sub: user.id,
+      id: user.id,
       role: isProfessional ? 'professional' : 'user'
     };
     return {
@@ -42,7 +42,7 @@ export class AuthService {
   async loginAdmin(user: any) {
     const payload = { 
       email: user.email, 
-      sub: user.id,
+      id: user.id,
       role: 'admin'
     };
     return {
