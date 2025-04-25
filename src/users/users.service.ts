@@ -50,6 +50,21 @@ export class UsersService {
     }
   }
 
+  // Buscar usuario por email y status true
+  async findByEmailAndStatus(email: string): Promise<User | null> {
+    try {
+      return await this.usersRepository
+        .createQueryBuilder("user")
+        .where("user.email = :email", { email })
+        .andWhere("user.status = :status", { status: true })
+        .getOne();
+    } catch (error) {
+      throw new Error(
+        `Error al buscar usuario por email y status: ${error.message}`
+      );
+    }
+  }
+
   // Buscar usuario por ID (sin password)
   async findById(id: number): Promise<User | null> {
     try {
@@ -66,7 +81,7 @@ export class UsersService {
   async findAll(): Promise<User[]> {
     try {
       return await this.usersRepository.find({
-        select: ["id", "email", "username", "role"], // Excluir password
+        select: ["id", "email", "username", "role", "status"], // Excluir password
       });
     } catch (error) {
       throw new Error(`Error al listar usuarios: ${error.message}`);
@@ -117,7 +132,9 @@ export class UsersService {
       user.status = status;
       return await this.usersRepository.save(user);
     } catch (error) {
-      throw new Error(`Error al cambiar el estado del usuario: ${error.message}`);
+      throw new Error(
+        `Error al cambiar el estado del usuario: ${error.message}`
+      );
     }
   }
 }

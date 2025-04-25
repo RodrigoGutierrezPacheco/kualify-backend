@@ -11,6 +11,9 @@ export class Admin {
   @Column()
   password: string;
 
+  @Column({default: true})
+  status: boolean
+
   @Column()
   adminName: string;
 }

@@ -45,7 +45,7 @@ export class AdminService {
   async findAll(): Promise<Admin[]> {
     try {
       return await this.adminRepository.find({
-        select: ["id", "email", "adminName"], // Excluir password
+        select: ["id", "email", "adminName", "status"	], // Excluir password
       });
     } catch (error) {
       throw new Error(`Error al listar profesionales: ${error.message}`);
@@ -90,6 +90,22 @@ export class AdminService {
         throw new ConflictException("El email ya está en uso");
       }
       throw new InternalServerErrorException("Error al actualizar profesional");
+    }
+  }
+
+  // Cambiar status
+  async changeStatus(id: number, status: boolean): Promise<Admin> {
+    try {
+      const profesional = await this.findById(id);
+      if (!profesional) {
+        throw new Error("Profesional no encontrado");
+      }
+      profesional.status = status;
+      return await this.adminRepository.save(profesional);
+    } catch (error) {
+      throw new Error(
+        `Error al cambiar el estado del profesional: ${error.message}`
+      );
     }
   }
 

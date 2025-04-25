@@ -15,9 +15,9 @@ export class AuthService {
   async validateUser(email: string, pass: string, isProfessional: boolean): Promise<any> {
     let user;
     if (isProfessional) {
-      user = await this.professionalsService.findByEmail(email);
+      user = await this.professionalsService.findByEmailAndStatus(email);
     } else {
-      user = await this.usersService.findOne(email);
+      user = await this.usersService.findByEmailAndStatus(email);
     }
 
     if (user && (await bcrypt.compare(pass, user.password))) {
@@ -32,6 +32,18 @@ export class AuthService {
       email: user.email, 
       sub: user.id,
       role: isProfessional ? 'professional' : 'user'
+    };
+    return {
+      access_token: this.jwtService.sign(payload),
+      status: 200
+    };
+  }
+
+  async loginAdmin(user: any) {
+    const payload = { 
+      email: user.email, 
+      sub: user.id,
+      role: 'admin'
     };
     return {
       access_token: this.jwtService.sign(payload),

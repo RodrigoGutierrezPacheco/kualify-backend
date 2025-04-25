@@ -2,7 +2,7 @@ import {
   Injectable,
   ConflictException,
   InternalServerErrorException,
-  NotFoundException
+  NotFoundException,
 } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
@@ -46,7 +46,7 @@ export class ProfesionalService {
   async findAll(): Promise<Profesional[]> {
     try {
       return await this.profesionalRepository.find({
-        select: ["id", "email", "profesionalname"], // Excluir password
+        select: ["id", "email", "profesionalname", "status", "auditado"], // Excluir password
       });
     } catch (error) {
       throw new Error(`Error al listar profesionales: ${error.message}`);
@@ -113,15 +113,17 @@ export class ProfesionalService {
       profesional.status = status;
       return await this.profesionalRepository.save(profesional);
     } catch (error) {
-      throw new Error(`Error al cambiar el estado del profesional: ${error.message}`);
+      throw new Error(
+        `Error al cambiar el estado del profesional: ${error.message}`
+      );
     }
   }
 
   async audit(id: number, auditado: boolean): Promise<Profesional> {
     const profesional = await this.profesionalRepository.findOneBy({ id });
-    
+
     if (!profesional) {
-      throw new NotFoundException('Profesional no encontrado');
+      throw new NotFoundException("Profesional no encontrado");
     }
 
     profesional.auditado = auditado;
@@ -129,15 +131,32 @@ export class ProfesionalService {
   }
 
   // Buscar profesional por email (incluyendo password para validación)
-async findByEmail(email: string): Promise<Profesional | null> {
-  try {
-    return await this.profesionalRepository
-      .createQueryBuilder('profesional')
-      .where('profesional.email = :email', { email })
-      .addSelect('profesional.password') // Incluir el campo password que normalmente se excluye
-      .getOne();
-  } catch (error) {
-    throw new Error(`Error al buscar profesional por email: ${error.message}`);
+  async findByEmail(email: string): Promise<Profesional | null> {
+    try {
+      return await this.profesionalRepository
+        .createQueryBuilder("profesional")
+        .where("profesional.email = :email", { email })
+        .addSelect("profesional.password") // Incluir el campo password que normalmente se excluye
+        .getOne();
+    } catch (error) {
+      throw new Error(
+        `Error al buscar profesional por email: ${error.message}`
+      );
+    }
   }
-}
+
+  // Buscar profesional por email y status true
+  async findByEmailAndStatus(email: string): Promise<Profesional | null> {
+    try {
+      return await this.profesionalRepository
+        .createQueryBuilder("profesional")
+        .where("profesional.email = :email", { email })
+        .andWhere("profesional.status = :status", { status: true })
+        .getOne();
+    } catch (error) {
+      throw new Error(
+        `Error al buscar profesional por email y status: ${error.message}`
+      );
+    }
+  }
 }
