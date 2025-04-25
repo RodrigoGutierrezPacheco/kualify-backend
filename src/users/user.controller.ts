@@ -10,7 +10,7 @@ import {
   HttpStatus,
   Res,
   Query,
-  ParseIntPipe,
+  ParseUUIDPipe,
   NotFoundException,
   ConflictException,
 } from "@nestjs/common";
@@ -66,7 +66,7 @@ export class UsersController {
   }
 
   @Get(":id")
-  async findOne(@Param("id", ParseIntPipe) id: number, @Res() res: Response) {
+  async findOne(@Param("id", ParseUUIDPipe) id: string, @Res() res: Response) {
     try {
       const user = await this.usersService.findById(id);
       if (!user) {
@@ -93,7 +93,7 @@ export class UsersController {
 
   @Patch(":id")
   async update(
-    @Param("id", ParseIntPipe) id: number,
+    @Param("id", ParseUUIDPipe) id: string,
     @Body() updateUserDto: UpdateUserDto,
     @Res() res: Response
   ) {
@@ -118,7 +118,7 @@ export class UsersController {
   }
 
   @Delete(":id")
-  async remove(@Param("id", ParseIntPipe) id: number, @Res() res: Response) {
+  async remove(@Param("id", ParseUUIDPipe) id: string, @Res() res: Response) {
     try {
       await this.usersService.remove(id);
       return res.status(HttpStatus.OK).json({
@@ -138,7 +138,7 @@ export class UsersController {
   // Metodo para cambiar el status
   @Put(':id/status') 
   async changeStatus(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id', ParseUUIDPipe) id: string,
     @Body('status') status: boolean,
     @Res() res: Response,
   ) {

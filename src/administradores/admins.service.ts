@@ -53,7 +53,7 @@ export class AdminService {
   }
 
   // Buscar usuario por ID (sin password)
-  async findById(id: number): Promise<Admin | null> {
+  async findById(id: string): Promise<Admin | null> {
     try {
       return await this.adminRepository.findOne({
         where: { id },
@@ -77,7 +77,7 @@ export class AdminService {
       }
 
       await this.adminRepository.update(id, updateData);
-      const updatedUser = await this.findById(id);
+      const updatedUser = await this.findById(id.toString());
 
       if (!updatedUser) {
         throw new Error("Usuario no encontrado");
@@ -94,7 +94,7 @@ export class AdminService {
   }
 
   // Cambiar status
-  async changeStatus(id: number, status: boolean): Promise<Admin> {
+  async changeStatus(id: string, status: boolean): Promise<Admin> {
     try {
       const profesional = await this.findById(id);
       if (!profesional) {

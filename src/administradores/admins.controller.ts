@@ -9,7 +9,7 @@ import {
   HttpStatus,
   Res,
   Query,
-  ParseIntPipe,
+  ParseUUIDPipe,
   NotFoundException,
   ConflictException,
   Put,
@@ -65,7 +65,7 @@ export class AdminsController {
   }
 
   @Get(":id")
-  async findOne(@Param("id", ParseIntPipe) id: number, @Res() res: Response) {
+  async findOne(@Param("id", ParseUUIDPipe) id: string, @Res() res: Response) {
     try {
       const user = await this.AdminsService.findById(id);
       if (!user) {
@@ -92,7 +92,7 @@ export class AdminsController {
 
   @Patch(":id")
   async update(
-    @Param("id", ParseIntPipe) id: number,
+    @Param("id", ParseUUIDPipe) id: number,
     @Body() updateUserDto: UpdateAdminDto,
     @Res() res: Response
   ) {
@@ -117,7 +117,7 @@ export class AdminsController {
   }
 
   @Delete(":id")
-  async remove(@Param("id", ParseIntPipe) id: number, @Res() res: Response) {
+  async remove(@Param("id", ParseUUIDPipe) id: number, @Res() res: Response) {
     try {
       await this.AdminsService.remove(id);
       return res.status(HttpStatus.OK).json({
@@ -136,7 +136,7 @@ export class AdminsController {
 
   @Put(":id/status")
   async changeStatus(
-    @Param("id", ParseIntPipe) id: number,
+    @Param("id", ParseUUIDPipe) id: string,
     @Body("status")status: boolean,
     @Res() res: Response
   ) {

@@ -4,7 +4,7 @@ import {
   Param,
   UploadedFile,
   UseInterceptors,
-  ParseIntPipe,
+  ParseUUIDPipe,
   Body,
   ConflictException,
   BadRequestException,
@@ -28,7 +28,7 @@ export class DocumentosController {
     })
   )
   async uploadDocumento(
-    @Param("id", ParseIntPipe) id: number,
+    @Param("id", ParseUUIDPipe) id: string,
     @UploadedFile() file: Express.Multer.File,
     @Body() dto: UploadDocumentoDto
   ) {
@@ -44,7 +44,7 @@ export class DocumentosController {
 
   @Delete(":documentoId")
   async eliminarDocumento(
-    @Param("documentoId", ParseIntPipe) documentoId: number
+    @Param("documentoId", ParseUUIDPipe) documentoId: number
   ) {
     try {
       await this.documentoService.eliminarDocumento(documentoId);
@@ -58,14 +58,14 @@ export class DocumentosController {
   }
 
   @Get()
-  async listarDocumentos(@Param("id", ParseIntPipe) profesionalId: number) {
-    return this.documentoService.obtenerDocumentosPorProfesional(profesionalId);
+  async listarDocumentos(@Param("id", ParseUUIDPipe) profesionalId: number) {
+    return this.documentoService.obtenerDocumentosPorProfesional(profesionalId.toString());
   }
 
   @Patch(":documentoId/auditar") // Nuevo endpoint para marcar como auditado
   async marcarComoAuditado(
-    @Param("id", ParseIntPipe) profesionalId: number,
-    @Param("documentoId", ParseIntPipe) documentoId: number
+    @Param("id", ParseUUIDPipe) profesionalId: number,
+    @Param("documentoId", ParseUUIDPipe) documentoId: number
   ) {
     try {
       return await this.documentoService.marcarDocumentoComoAuditado(documentoId);

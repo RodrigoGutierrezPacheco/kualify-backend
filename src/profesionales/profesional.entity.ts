@@ -1,10 +1,11 @@
 import { Entity, PrimaryGeneratedColumn, Column , OneToMany} from "typeorm";
 import { Documento } from "src/documentos/documento.entity";
+import { v4 as uuidv4 } from 'uuid';
 
 @Entity()
 export class Profesional {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn("uuid")
+  id: string;
 
   @Column({ unique: true })
   email: string;
@@ -26,4 +27,10 @@ export class Profesional {
 
   @Column({default: false})
   auditado: boolean
+
+  constructor(){
+    if(!this.id){
+      this.id = uuidv4();
+    }
+  }
 }

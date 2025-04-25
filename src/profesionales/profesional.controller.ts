@@ -9,7 +9,7 @@ import {
   HttpStatus,
   Res,
   Query,
-  ParseIntPipe,
+  ParseUUIDPipe,
   NotFoundException,
   ConflictException,
   Put,
@@ -70,7 +70,7 @@ export class ProfesionalsController {
   }
 
   @Get(":id")
-  async findOne(@Param("id", ParseIntPipe) id: number, @Res() res: Response) {
+  async findOne(@Param("id", ParseUUIDPipe) id: string, @Res() res: Response) {
     try {
       const user = await this.profesionalsService.findById(id);
       if (!user) {
@@ -97,7 +97,7 @@ export class ProfesionalsController {
 
   @Patch(":id")
   async update(
-    @Param("id", ParseIntPipe) id: number,
+    @Param("id", ParseUUIDPipe) id: string,
     @Body() updateUserDto: UptateProfesionalDto,
     @Res() res: Response
   ) {
@@ -125,7 +125,7 @@ export class ProfesionalsController {
   }
 
   @Delete(":id")
-  async remove(@Param("id", ParseIntPipe) id: number, @Res() res: Response) {
+  async remove(@Param("id", ParseUUIDPipe) id: number, @Res() res: Response) {
     try {
       await this.profesionalsService.remove(id);
       return res.status(HttpStatus.OK).json({
@@ -144,7 +144,7 @@ export class ProfesionalsController {
 
   @Put(":id/status")
   async changeStatus(
-    @Param("id", ParseIntPipe) id: number,
+    @Param("id", ParseUUIDPipe) id: string,
     @Body("status") status: boolean,
     @Res() res: Response
   ) {
@@ -169,7 +169,7 @@ export class ProfesionalsController {
 
   @Put(':id/auditar')
   async audit(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id', ParseUUIDPipe) id: string,
     @Body('auditado') auditado: boolean, // Cambiado a 'auditado' para ser consistente con tu entidad
     @Res() res: Response,
   ) {

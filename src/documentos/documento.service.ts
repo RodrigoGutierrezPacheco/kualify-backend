@@ -16,7 +16,7 @@ export class DocumentoService {
   ) {}
 
   async subirDocumento(
-    profesionalId: number,
+    profesionalId: string,
     file: Express.Multer.File,
     tipo: string
   ): Promise<Documento> {
@@ -84,7 +84,7 @@ export class DocumentoService {
   }
 
   async obtenerDocumentosPorProfesional(
-    profesionalId: number
+    profesionalId: string
   ): Promise<DocumentoConProfesionalDto[]> {
     // Verificar si el profesional existe
     const profesional = await this.profesionalRepository.findOne({

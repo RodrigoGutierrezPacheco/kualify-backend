@@ -1,9 +1,10 @@
 import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { v4 as uuidv4 } from 'uuid';
 
 @Entity()
 export class User {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn("uuid")
+  id: string;
 
   @Column({ unique: true })
   email: string;
@@ -19,4 +20,10 @@ export class User {
 
   @Column({ default: true })
   status: boolean;
+
+  constructor(){
+    if(!this.id){
+      this.id = uuidv4();
+    }
+  }
 }

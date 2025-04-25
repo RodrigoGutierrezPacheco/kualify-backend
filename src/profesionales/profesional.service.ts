@@ -54,7 +54,7 @@ export class ProfesionalService {
   }
 
   // Buscar usuario por ID (sin password)
-  async findById(id: number): Promise<Profesional | null> {
+  async findById(id: string): Promise<Profesional | null> {
     try {
       return await this.profesionalRepository.findOne({
         where: { id },
@@ -67,7 +67,7 @@ export class ProfesionalService {
 
   // Actualizar usuario con hashing de password
   async update(
-    id: number,
+    id: string,
     updateData: Partial<Profesional>
   ): Promise<Profesional> {
     try {
@@ -104,7 +104,7 @@ export class ProfesionalService {
   }
 
   // Cambiar status
-  async changeStatus(id: number, status: boolean): Promise<Profesional> {
+  async changeStatus(id: string, status: boolean): Promise<Profesional> {
     try {
       const profesional = await this.findById(id);
       if (!profesional) {
@@ -119,7 +119,7 @@ export class ProfesionalService {
     }
   }
 
-  async audit(id: number, auditado: boolean): Promise<Profesional> {
+  async audit(id: string, auditado: boolean): Promise<Profesional> {
     const profesional = await this.profesionalRepository.findOneBy({ id });
 
     if (!profesional) {

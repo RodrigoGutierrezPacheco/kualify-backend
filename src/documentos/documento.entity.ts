@@ -26,7 +26,7 @@ export class Documento {
 export class DocumentoConProfesionalDto{
   id: number;
   profesional:{
-    id:number;
+    id:string;
     email:string;
     profesionalname:string
   }

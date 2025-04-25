@@ -66,7 +66,7 @@ export class UsersService {
   }
 
   // Buscar usuario por ID (sin password)
-  async findById(id: number): Promise<User | null> {
+  async findById(id: string): Promise<User | null> {
     try {
       return await this.usersRepository.findOne({
         where: { id },
@@ -89,7 +89,7 @@ export class UsersService {
   }
 
   // Actualizar usuario con hashing de password
-  async update(id: number, updateData: Partial<User>): Promise<User> {
+  async update(id: string, updateData: Partial<User>): Promise<User> {
     try {
       // Si se está actualizando el password, lo hasheamos
       if (updateData.password) {
@@ -98,7 +98,7 @@ export class UsersService {
       }
 
       await this.usersRepository.update(id, updateData);
-      const updatedUser = await this.findById(id);
+      const updatedUser = await this.findById(id.toString());
 
       if (!updatedUser) {
         throw new Error("Usuario no encontrado");
@@ -114,7 +114,7 @@ export class UsersService {
     }
   }
   // Eliminar usuario
-  async remove(id: number): Promise<void> {
+  async remove(id: string): Promise<void> {
     try {
       await this.usersRepository.delete(id);
     } catch (error) {
@@ -123,7 +123,7 @@ export class UsersService {
   }
 
   // Cambiar status
-  async changeStatus(id: number, status: boolean): Promise<User> {
+  async changeStatus(id: string, status: boolean): Promise<User> {
     try {
       const user = await this.findById(id);
       if (!user) {

@@ -1,9 +1,10 @@
 import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
+import { v4 as uuidv4 } from 'uuid';
 
 @Entity()
 export class Admin {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn("uuid")
+  id: string;
 
   @Column({ unique: true })
   email: string;
@@ -16,4 +17,10 @@ export class Admin {
 
   @Column()
   adminName: string;
+
+  constructor(){
+    if(!this.id){
+      this.id = uuidv4();
+    }
+  }
 }
