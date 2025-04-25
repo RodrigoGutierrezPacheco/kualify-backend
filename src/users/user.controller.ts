@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Delete,
+  Put,
   HttpStatus,
   Res,
   Query,
@@ -130,6 +131,34 @@ export class UsersController {
         statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
         message: error.message || "Error al eliminar el usuario",
         error: "Internal Server Error",
+      });
+    }
+  }
+
+  // Metodo para cambiar el status
+  @Put(':id/status') 
+  async changeStatus(
+    @Param('id', ParseIntPipe) id: number,
+    @Body('status') status: boolean,
+    @Res() res: Response,
+  ) {
+    try {
+      const updatedUser = await this.usersService.changeStatus(id, status);
+      return res.status(HttpStatus.OK).json({
+        statusCode: HttpStatus.OK,
+        message: 'Estado del usuario actualizado con éxito',
+        data: this.sanitizeUser(updatedUser),
+      });
+    } catch (error) {
+      const statusCode =
+        error instanceof NotFoundException
+          ? HttpStatus.NOT_FOUND
+          : HttpStatus.INTERNAL_SERVER_ERROR;
+
+      return res.status(statusCode).json({
+        statusCode,
+        message: error.message || 'Error al cambiar el estado del usuario',
+        error: error.name || 'Internal Server Error',
       });
     }
   }

@@ -2,6 +2,7 @@ import {
   Injectable,
   ConflictException,
   InternalServerErrorException,
+  NotFoundException
 } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
@@ -100,6 +101,31 @@ export class ProfesionalService {
     } catch (error) {
       throw new Error(`Error al eliminar usuario: ${error.message}`);
     }
+  }
+
+  // Cambiar status
+  async changeStatus(id: number, status: boolean): Promise<Profesional> {
+    try {
+      const profesional = await this.findById(id);
+      if (!profesional) {
+        throw new Error("Profesional no encontrado");
+      }
+      profesional.status = status;
+      return await this.profesionalRepository.save(profesional);
+    } catch (error) {
+      throw new Error(`Error al cambiar el estado del profesional: ${error.message}`);
+    }
+  }
+
+  async audit(id: number, auditado: boolean): Promise<Profesional> {
+    const profesional = await this.profesionalRepository.findOneBy({ id });
+    
+    if (!profesional) {
+      throw new NotFoundException('Profesional no encontrado');
+    }
+
+    profesional.auditado = auditado;
+    return this.profesionalRepository.save(profesional);
   }
 
   // Buscar profesional por email (incluyendo password para validación)

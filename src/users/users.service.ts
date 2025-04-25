@@ -106,4 +106,18 @@ export class UsersService {
       throw new Error(`Error al eliminar usuario: ${error.message}`);
     }
   }
+
+  // Cambiar status
+  async changeStatus(id: number, status: boolean): Promise<User> {
+    try {
+      const user = await this.findById(id);
+      if (!user) {
+        throw new Error("Usuario no encontrado");
+      }
+      user.status = status;
+      return await this.usersRepository.save(user);
+    } catch (error) {
+      throw new Error(`Error al cambiar el estado del usuario: ${error.message}`);
+    }
+  }
 }
