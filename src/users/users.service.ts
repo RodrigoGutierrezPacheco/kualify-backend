@@ -30,9 +30,31 @@ export class UsersService {
       return await this.usersRepository.save(user);
     } catch (error) {
       if (error.code === "23505") {
-        // Código para violación de unique constraint
-        // Ahora solo verifica conflicto de email
-        throw new ConflictException("El email ya está en uso");
+        // Analizamos el detalle del error para identificar qué campo causó el conflicto
+        const errorDetail = error.detail || error.message;
+
+        if (
+          errorDetail.includes("email") ||
+          error.constraint?.includes("email")
+        ) {
+          throw new ConflictException(
+            "El correo electrónico ya está registrado"
+          );
+        } else if (
+          errorDetail.includes("phone") ||
+          errorDetail.includes("teléfono") ||
+          errorDetail.includes("telefono") ||
+          error.constraint?.includes("phone")
+        ) {
+          throw new ConflictException(
+            "El número de teléfono ya está registrado"
+          );
+        } else {
+          // Mensaje genérico si no podemos identificar el campo exacto
+          throw new ConflictException(
+            "Los datos proporcionados ya están en uso"
+          );
+        }
       }
       throw new InternalServerErrorException("Error al crear el usuario");
     }
@@ -70,7 +92,7 @@ export class UsersService {
     try {
       return await this.usersRepository.findOne({
         where: { id },
-        select: ["id", "email", "username", "role"], // Excluir password
+        select: ["id", "email", "username", "role", "phoneNumber"], // Excluir password
       });
     } catch (error) {
       throw new Error(`Error al buscar usuario: ${error.message}`);
@@ -91,7 +113,6 @@ export class UsersService {
   // Actualizar usuario con hashing de password
   async update(id: string, updateData: Partial<User>): Promise<User> {
     try {
-      // Si se está actualizando el password, lo hasheamos
       if (updateData.password) {
         const salt = await bcrypt.genSalt();
         updateData.password = await bcrypt.hash(updateData.password, salt);
@@ -107,12 +128,31 @@ export class UsersService {
       return updatedUser;
     } catch (error) {
       if (error.code === "23505") {
-        // Violación de constraint único
-        throw new ConflictException("El email ya está en uso");
+        // Analizamos el mensaje de error para determinar qué campo es duplicado
+        const errorDetail = error.detail || "";
+
+        if (
+          error.constraint === "UQ_e12875dfb3b1d92d7d7c5377e22" ||
+          errorDetail.includes("email")
+        ) {
+          throw new ConflictException("El email ya está en uso");
+        } else if (
+          error.constraint === "UQ_f2578043e491921209f5dadd080" ||
+          errorDetail.includes("phoneNumber")
+        ) {
+          throw new ConflictException("El número de teléfono ya está en uso");
+        } else {
+          // Si no reconocemos el constraint, mostramos el error completo para debug
+          console.error("Error de constraint no manejado:", error);
+          throw new ConflictException(
+            "Dato duplicado: el valor ya existe en otro usuario"
+          );
+        }
       }
       throw new InternalServerErrorException("Error al actualizar usuario");
     }
   }
+
   // Eliminar usuario
   async remove(id: string): Promise<void> {
     try {

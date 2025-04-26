@@ -22,31 +22,58 @@ export class ProfesionalService {
     createProfesionalDto: CreateProfesionalDto
   ): Promise<Profesional> {
     const salt = await bcrypt.genSalt();
-    const hashesPassword = await bcrypt.hash(
+    const hashedPassword = await bcrypt.hash(
       createProfesionalDto.password,
       salt
     );
 
     const profesional = this.profesionalRepository.create({
       ...createProfesionalDto,
-      password: hashesPassword,
+      password: hashedPassword,
     });
+
     try {
       return await this.profesionalRepository.save(profesional);
     } catch (error) {
-      if (error.code === "23505")
-        // Codigo para violacion de unique constraing
-        // Ahora solo verifica conflicto de email
-        throw new ConflictException("El email ya esta en uso");
+      if (error.code === "23505") {
+        // Analizamos el error para determinar qué campo causó la violación
+        const errorDetail = error.detail || error.message;
+
+        if (
+          errorDetail.includes("email") ||
+          error.constraint?.includes("email")
+        ) {
+          throw new ConflictException("El email ya está en uso");
+        } else if (
+          errorDetail.includes("phone") ||
+          errorDetail.includes("teléfono") ||
+          errorDetail.includes("telefono") ||
+          error.constraint?.includes("phone")
+        ) {
+          throw new ConflictException("El número de teléfono ya está en uso");
+        } else {
+          // Mensaje genérico si no podemos determinar el campo
+          throw new ConflictException(
+            "El valor proporcionado ya existe en otro profesional"
+          );
+        }
+      }
+      throw new InternalServerErrorException("Error al crear el profesional");
     }
-    throw new InternalServerErrorException("Error al crear el usuario");
   }
 
   // Listar todos los usuarios (sin passwords)
   async findAll(): Promise<Profesional[]> {
     try {
       return await this.profesionalRepository.find({
-        select: ["id", "email", "profesionalname", "status", "auditado"], // Excluir password
+        select: [
+          "id",
+          "email",
+          "profesionalname",
+          "status",
+          "auditado",
+          "phoneNumber",
+        ], // Excluir password
       });
     } catch (error) {
       throw new Error(`Error al listar profesionales: ${error.message}`);
@@ -58,7 +85,14 @@ export class ProfesionalService {
     try {
       return await this.profesionalRepository.findOne({
         where: { id },
-        select: ["id", "email", "profesionalname"], // Excluir password
+        select: [
+          "id",
+          "email",
+          "profesionalname",
+          "status",
+          "auditado",
+          "phoneNumber",
+        ], // Excluir password
       });
     } catch (error) {
       throw new Error(`Error al buscar usuario: ${error.message}`);
@@ -71,7 +105,6 @@ export class ProfesionalService {
     updateData: Partial<Profesional>
   ): Promise<Profesional> {
     try {
-      // Si se está actualizando el password, lo hasheamos
       if (updateData.password) {
         const salt = await bcrypt.genSalt();
         updateData.password = await bcrypt.hash(updateData.password, salt);
@@ -81,14 +114,39 @@ export class ProfesionalService {
       const updatedUser = await this.findById(id);
 
       if (!updatedUser) {
-        throw new Error("Usuario no encontrado");
+        throw new Error("Profesional no encontrado");
       }
 
       return updatedUser;
     } catch (error) {
       if (error.code === "23505") {
-        // Violación de constraint único
-        throw new ConflictException("El email ya está en uso");
+        // Analizamos el error para determinar qué campo causó la violación
+        const errorMessage = error.detail || error.message;
+
+        if (errorMessage.includes("email")) {
+          throw new ConflictException(
+            "El email ya está en uso por otro profesional"
+          );
+        } else if (
+          errorMessage.includes("phone") ||
+          errorMessage.includes("teléfono") ||
+          errorMessage.includes("telefono")
+        ) {
+          throw new ConflictException(
+            "El número de teléfono ya está en uso por otro profesional"
+          );
+        } else if (error.constraint === "profesional_email_key") {
+          // Nombre específico de constraint para email
+          throw new ConflictException("El email ya está en uso");
+        } else if (error.constraint === "profesional_phoneNumber_key") {
+          // Nombre específico de constraint para teléfono
+          throw new ConflictException("El teléfono ya está en uso");
+        } else {
+          // Mensaje genérico si no podemos determinar el campo
+          throw new ConflictException(
+            "El valor proporcionado ya existe en otro profesional"
+          );
+        }
       }
       throw new InternalServerErrorException("Error al actualizar profesional");
     }

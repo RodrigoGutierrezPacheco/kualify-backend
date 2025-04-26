@@ -15,6 +15,7 @@ export class DocumentoService {
     private cloudinaryService: CloudinaryService
   ) {}
 
+  // Se suben los archivos, si se encuentra un archivo ya existente se sustituye y elimina el anterior
   async subirDocumento(
     profesionalId: string,
     file: Express.Multer.File,
@@ -23,12 +24,12 @@ export class DocumentoService {
     const profesional = await this.profesionalRepository.findOneBy({
       id: profesionalId,
     });
-
+  
     if (!profesional) {
       throw new Error("Profesional no encontrado");
     }
-
-    // Validacion para no subir doble documentacion
+  
+    // Buscar documento existente
     const documentoExistente = await this.documentoRepository.findOne({
       where: {
         profesional: {
@@ -37,26 +38,40 @@ export class DocumentoService {
         tipo: tipo as any,
       },
     });
-
-    if (documentoExistente) {
-      throw new Error("El profesional ya tiene un documento de este tipo");
-    }
-
-    // Subir a Cloudinary
+  
+    // Subir a Cloudinary (o tu servicio de almacenamiento)
     const { url } = await this.cloudinaryService.uploadFile(file);
-
-    // Crear nuevo documento
+  
+    // Si existe un documento previo
+    if (documentoExistente) {
+      // 1. Eliminar el archivo antiguo de Cloudinary
+      try {
+        await this.cloudinaryService.deleteFile(documentoExistente.url);
+      } catch (error) {
+        console.error('Error al eliminar archivo antiguo:', error);
+        // Puedes decidir si quieres continuar o lanzar el error
+      }
+  
+      // 2. Actualizar el documento existente
+      documentoExistente.url = url;
+      documentoExistente.auditado = false; // Resetear estado de verificación
+      documentoExistente.fecha_subida = new Date();
+      
+      return this.documentoRepository.save(documentoExistente);
+    }
+  
+    // Si no existe, crear nuevo documento
     const documento = this.documentoRepository.create({
       tipo: tipo as any,
       url,
       auditado: false,
       profesional,
     });
-
+  
     return this.documentoRepository.save(documento);
   }
 
-  async eliminarDocumento(documentoId: number): Promise<void> {
+  async eliminarDocumento(documentoId: string): Promise<void> {
     // 1. Buscar el documento
     const documento = await this.documentoRepository.findOne({
       where: { id: documentoId },
@@ -120,7 +135,7 @@ export class DocumentoService {
     }));
   }
 
-  async marcarDocumentoComoAuditado(documentoId: number): Promise<Documento> {
+  async marcarDocumentoComoAuditado(documentoId: string): Promise<Documento> {
     // Buscar el documento
     const documento = await this.documentoRepository.findOne({
       where: { id: documentoId },

@@ -7,8 +7,11 @@ export class Profesional {
   @PrimaryGeneratedColumn("uuid")
   id: string;
 
-  @Column({ unique: true })
+  @Column({ unique: true, comment: "El email debe ser unico" })	
   email: string;
+
+  @Column({unique: true, nullable: true, comment:"El telefono debe ser unico" })	
+  phoneNumber: string
 
   @Column()
   password: string;

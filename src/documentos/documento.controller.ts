@@ -11,7 +11,8 @@ import {
   NotFoundException,
   Delete,
   Get,
-  Patch, // Nuevo decorador para operaciones de actualización parcial
+  Patch,
+  ParseIntPipe, // Nuevo decorador para operaciones de actualización parcial
 } from "@nestjs/common";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { DocumentoService } from "./documento.service";
@@ -44,7 +45,7 @@ export class DocumentosController {
 
   @Delete(":documentoId")
   async eliminarDocumento(
-    @Param("documentoId", ParseUUIDPipe) documentoId: number
+    @Param("documentoId", ParseIntPipe) documentoId: string
   ) {
     try {
       await this.documentoService.eliminarDocumento(documentoId);
@@ -64,8 +65,8 @@ export class DocumentosController {
 
   @Patch(":documentoId/auditar") // Nuevo endpoint para marcar como auditado
   async marcarComoAuditado(
-    @Param("id", ParseUUIDPipe) profesionalId: number,
-    @Param("documentoId", ParseUUIDPipe) documentoId: number
+    @Param("id", ParseUUIDPipe) profesionalId: string,
+    @Param("documentoId", ParseIntPipe) documentoId: string
   ) {
     try {
       return await this.documentoService.marcarDocumentoComoAuditado(documentoId);

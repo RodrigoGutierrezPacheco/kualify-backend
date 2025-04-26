@@ -9,6 +9,9 @@ export class CreateProfesionalDto{
     profesionalname:string;
 
     @IsString()
+    phoneNumber:string;
+
+    @IsString()
     @MinLength(8)
     password:string;
 }

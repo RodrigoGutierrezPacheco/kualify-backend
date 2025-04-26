@@ -4,7 +4,7 @@ import { Profesional } from 'src/profesionales/profesional.entity';
 @Entity()
 export class Documento {
   @PrimaryGeneratedColumn()
-  id: number;
+  id: string;
 
   @Column()
   tipo: 'acta_nacimiento' | 'comprobante_domicilio' | 'constancia_fiscal' | 'ine_pasaporte';
@@ -24,7 +24,7 @@ export class Documento {
 }
 
 export class DocumentoConProfesionalDto{
-  id: number;
+  id: string;
   profesional:{
     id:string;
     email:string;

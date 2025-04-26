@@ -170,7 +170,7 @@ export class ProfesionalsController {
   @Put(':id/auditar')
   async audit(
     @Param('id', ParseUUIDPipe) id: string,
-    @Body('auditado') auditado: boolean, // Cambiado a 'auditado' para ser consistente con tu entidad
+    @Body('auditado') auditado: boolean,
     @Res() res: Response,
   ) {
     try {
