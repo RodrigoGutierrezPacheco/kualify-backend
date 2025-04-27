@@ -9,6 +9,7 @@ export class CreateProfesionalDto{
     profesionalname:string;
 
     @IsString()
+    @MinLength(10)
     phoneNumber:string;
 
     @IsString()

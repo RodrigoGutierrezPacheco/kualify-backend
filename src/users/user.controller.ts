@@ -19,6 +19,7 @@ import { CreateUserDto } from "./create-user.dto";
 import { UpdateUserDto } from "./update-user.dto";
 import { Response } from "express";
 import { User } from "./user.entity";
+import { Public } from "src/auth/decorators/public.decorator";
 
 @Controller("users")
 export class UsersController {
@@ -136,17 +137,17 @@ export class UsersController {
   }
 
   // Metodo para cambiar el status
-  @Put(':id/status') 
+  @Put(":id/status")
   async changeStatus(
-    @Param('id', ParseUUIDPipe) id: string,
-    @Body('status') status: boolean,
-    @Res() res: Response,
+    @Param("id", ParseUUIDPipe) id: string,
+    @Body("status") status: boolean,
+    @Res() res: Response
   ) {
     try {
       const updatedUser = await this.usersService.changeStatus(id, status);
       return res.status(HttpStatus.OK).json({
         statusCode: HttpStatus.OK,
-        message: 'Estado del usuario actualizado con éxito',
+        message: "Estado del usuario actualizado con éxito",
         data: this.sanitizeUser(updatedUser),
       });
     } catch (error) {
@@ -157,8 +158,8 @@ export class UsersController {
 
       return res.status(statusCode).json({
         statusCode,
-        message: error.message || 'Error al cambiar el estado del usuario',
-        error: error.name || 'Internal Server Error',
+        message: error.message || "Error al cambiar el estado del usuario",
+        error: error.name || "Internal Server Error",
       });
     }
   }

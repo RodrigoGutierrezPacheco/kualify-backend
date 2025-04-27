@@ -1,4 +1,5 @@
 import { Module } from "@nestjs/common";
+import { APP_GUARD } from "@nestjs/core";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
 import { DatabaseModule } from "./database/database.module";
@@ -9,15 +10,16 @@ import { ClientesModule } from "./clientes/clientes.module";
 import { ConfigModule } from "@nestjs/config";
 import { AdminsModule } from './administradores/admins.module';
 import { CloudinaryModule } from "./cloudinary/cloudinaty.module";
+import { JwtAuthGuard } from "./auth/guards/jwt-auth.guard";
 
 @Module({
   imports: [
     ConfigModule.forRoot({
-      isGlobal: true, // Esto hace que ConfigService esté disponible en todos los módulos
-      envFilePath: '.env', // Especifica la ruta de tu archivo .env
+      isGlobal: true,
+      envFilePath: '.env',
     }),
     DatabaseModule,
-    AuthModule,
+    AuthModule,  // Asegúrate que AuthModule exporte JwtModule
     UsersModule,
     ProfesionalesModule,
     ClientesModule,
@@ -25,6 +27,12 @@ import { CloudinaryModule } from "./cloudinary/cloudinaty.module";
     CloudinaryModule
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_GUARD,  // Usa APP_GUARD de @nestjs/core en lugar de string
+      useClass: JwtAuthGuard,
+    },
+  ],
 })
 export class AppModule {}
