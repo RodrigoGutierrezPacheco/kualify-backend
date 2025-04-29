@@ -12,7 +12,7 @@ export class Documento {
   @Column()
   url: string;
 
-  @Column({ default: false })
+  @Column({ default: null })
   auditado: boolean;
 
   @Column({ nullable: true })

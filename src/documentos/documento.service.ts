@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import { Injectable, NotFoundException ,BadRequestException} from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { Documento, DocumentoConProfesionalDto } from "./documento.entity";
@@ -135,7 +135,7 @@ export class DocumentoService {
     }));
   }
 
-  async marcarDocumentoComoAuditado(documentoId: string): Promise<Documento> {
+  async marcarDocumentoComoAuditado(documentoId: string, comentario:string, auditado: boolean): Promise<Documento> {
     // Buscar el documento
     const documento = await this.documentoRepository.findOne({
       where: { id: documentoId },
@@ -146,7 +146,8 @@ export class DocumentoService {
     }
 
     // Actualizar el estado de auditoría
-    documento.auditado = true;
+    documento.auditado = auditado;
+    documento.comentario = comentario
 
     // Guardar los cambios
     return await this.documentoRepository.save(documento);

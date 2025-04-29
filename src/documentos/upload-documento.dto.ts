@@ -22,4 +22,5 @@ export class AuditDocumentoDto {
   fechaAuditoria?: Date;
   tipo: string;
   url: string;
+  comentario: string;
 }

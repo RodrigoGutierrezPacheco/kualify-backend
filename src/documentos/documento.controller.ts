@@ -17,6 +17,7 @@ import {
 import { FileInterceptor } from "@nestjs/platform-express";
 import { DocumentoService } from "./documento.service";
 import { UploadDocumentoDto } from "./upload-documento.dto";
+import { AuditarDocumentoDto } from "./auditar-documento.dto";
 
 @Controller("profesionales/:id/documentos")
 export class DocumentosController {
@@ -63,13 +64,17 @@ export class DocumentosController {
     return this.documentoService.obtenerDocumentosPorProfesional(profesionalId);
   }
 
-  @Patch(":documentoId/auditar") // Nuevo endpoint para marcar como auditado
+  @Patch(":documentoId/auditar") 
   async marcarComoAuditado(
     @Param("id", ParseUUIDPipe) profesionalId: string,
-    @Param("documentoId", ParseIntPipe) documentoId: string
+    @Param("documentoId") documentoId: string,
+    @Body() body: AuditarDocumentoDto
   ) {
+    if (!body.comentario) {
+      throw new BadRequestException("El comentario es obligatorio");
+    }
     try {
-      return await this.documentoService.marcarDocumentoComoAuditado(documentoId);
+      return await this.documentoService.marcarDocumentoComoAuditado(documentoId, body.comentario, body.auditado);
     } catch (error) {
       if (error instanceof NotFoundException) {
         throw error;
