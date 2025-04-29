@@ -7,12 +7,12 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   const configService = app.get(ConfigService);
-  const port = configService.get<number>("PORT") || 5000;
+  const port = process.env.PORT || 5000;
   const dbHost = configService.get<string>("DB_HOST");
   const dbPort = configService.get<number>("DB_PORT");
   const dbName = configService.get<string>("DB_NAME");
 
-  const allowedOrigins = ["http://localhost:3000", "http://localhost:5173"];
+  const allowedOrigins = ["http://localhost:3000", "http://localhost:5173", "https://kualify-tau.vercel.app/"];
 
   // Configuración de CORS
   app.enableCors({
