@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsNotEmpty, IsString, IsBoolean } from 'class-validator';
 
 export class EstadoDto {
   @IsNotEmpty()
@@ -6,8 +6,18 @@ export class EstadoDto {
   nombre: string;
 }
 
-export class CiudadDto extends EstadoDto {
+export class CiudadDto {
   @IsNotEmpty()
   @IsString()
-  ciudad: string;
+  nombre: string;
+
+}
+
+export class EstadoConCiudadesDto {
+  @IsNotEmpty()
+  @IsString()
+  nombre: string;
+
+  @IsNotEmpty()
+  ciudades: string[]; 
 }

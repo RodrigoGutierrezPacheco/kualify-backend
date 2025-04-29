@@ -13,6 +13,12 @@ export class CreateProfesionalDto{
     phoneNumber:string;
 
     @IsString()
+    ciudad:string;
+
+    @IsString()
+    estado:string;
+
+    @IsString()
     @MinLength(8)
     password:string;
 }

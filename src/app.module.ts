@@ -11,6 +11,7 @@ import { ConfigModule } from "@nestjs/config";
 import { AdminsModule } from './administradores/admins.module';
 import { CloudinaryModule } from "./cloudinary/cloudinaty.module";
 import { JwtAuthGuard } from "./auth/guards/jwt-auth.guard";
+import { UbicacionesModule } from "./ubicaciones/ubicaciones.module";
 
 @Module({
   imports: [
@@ -24,7 +25,8 @@ import { JwtAuthGuard } from "./auth/guards/jwt-auth.guard";
     ProfesionalesModule,
     ClientesModule,
     AdminsModule,
-    CloudinaryModule
+    CloudinaryModule,
+    UbicacionesModule
   ],
   controllers: [AppController],
   providers: [

@@ -92,6 +92,8 @@ export class ProfesionalService {
           "status",
           "auditado",
           "phoneNumber",
+          "ciudad",
+          "estado",
         ], // Excluir password
       });
     } catch (error) {

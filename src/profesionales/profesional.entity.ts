@@ -19,6 +19,12 @@ export class Profesional {
   @Column()
   profesionalname: string;
 
+  @Column({nullable: true})
+  estado: string;
+
+  @Column({nullable: true})
+  ciudad: string;
+
   @Column({ default: 'profesional' })
   role: string;
 
