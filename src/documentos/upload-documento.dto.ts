@@ -4,7 +4,8 @@ const tiposDocumentosValidos = [
   'acta_nacimiento',
   'comprobante_domicilio',
   'constancia_fiscal',
-  'ine_pasaporte'
+  'ine_pasaporte',
+  'profile_image'
 ] as const;
 
 export class UploadDocumentoDto {

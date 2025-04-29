@@ -1200,7 +1200,6 @@ export const ESTADOS_CIUDADES: EstadoConCiudadesDto[] = [
     ciudades: [
       // Principales ciudades
       "Morelia (capital)",
-      "Uruapan",
       "Zamora de Hidalgo",
       "Lázaro Cárdenas",
       "Pátzcuaro",
@@ -1317,14 +1316,7 @@ export const ESTADOS_CIUDADES: EstadoConCiudadesDto[] = [
       "Zitácuaro",
 
       // Pueblos Mágicos
-      "Cuitzeo",
       "Santa Clara del Cobre",
-      "Tlalpujahua",
-      "Tzintzuntzan",
-      "Angangueo",
-      "Jiquilpan",
-      "Paracho",
-      "Tacámbaro",
 
       // Zonas arqueológicas
       "Tzintzuntzan (yacimiento purépecha)",
@@ -1347,9 +1339,6 @@ export const ESTADOS_CIUDADES: EstadoConCiudadesDto[] = [
       "Maruata",
 
       // Ciudades industriales
-      "Sahuayo",
-      "Yurécuaro",
-      "La Piedad",
       "Zamora (corredor agroindustrial)",
     ],
   },
@@ -1359,7 +1348,6 @@ export const ESTADOS_CIUDADES: EstadoConCiudadesDto[] = [
       // Principales ciudades
       "Cuernavaca (capital)",
       "Jiutepec",
-      "Temixco",
       "Cuautla",
       "Yautepec",
 
@@ -1415,7 +1403,6 @@ export const ESTADOS_CIUDADES: EstadoConCiudadesDto[] = [
       // Ciudades industriales
       "CIVAC (Jiutepec)",
       "Parque Industrial Cuautla",
-      "Zona Industrial de Temixco",
     ],
   },
   {

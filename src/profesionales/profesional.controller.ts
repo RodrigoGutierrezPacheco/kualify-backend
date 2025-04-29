@@ -19,11 +19,13 @@ import { CreateProfesionalDto } from "./create-profesional.dto";
 import { UptateProfesionalDto } from "./update-profesional.dto";
 import { Response } from "express";
 import { Profesional } from "./profesional.entity";
+import { Public } from "src/auth/decorators/public.decorator";
 
 @Controller("profesionals")
 export class ProfesionalsController {
   constructor(private readonly profesionalsService: ProfesionalService) {}
 
+  @Public()
   @Post()
   async create(
     @Body() createProfesionalDto: CreateProfesionalDto,

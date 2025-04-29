@@ -1,24 +1,46 @@
-import { IsEmail, IsString, MinLength } from "class-validator";
+// create-profesional.dto.ts
+import {
+  IsEmail,
+  IsOptional,
+  IsString,
+  MinLength,
+  IsDateString,
+  IsIn,
+} from "class-validator";
 
-export class CreateProfesionalDto{
-    @IsEmail()
-    email:string;
+export class CreateProfesionalDto {
+  @IsEmail()
+  email: string;
 
-    @IsString()
-    @MinLength(3)
-    profesionalname:string;
+  @IsString()
+  @MinLength(10)
+  phoneNumber: string;
 
-    @IsString()
-    @MinLength(10)
-    phoneNumber:string;
+  @IsString()
+  @MinLength(3)
+  profesionalname: string;
 
-    @IsString()
-    ciudad:string;
+  @IsOptional()
+  @IsString()
+  pais?: string;
 
-    @IsString()
-    estado:string;
+  @IsOptional()
+  fecha_nacimiento?: string;
 
-    @IsString()
-    @MinLength(8)
-    password:string;
+  @IsOptional()
+  @IsString()
+  @IsIn(["masculino", "femenino", "otro", ""])
+  genero?: string;
+
+  @IsOptional()
+  @IsString()
+  estado?: string;
+
+  @IsOptional()
+  @IsString()
+  ciudad?: string;
+
+  @IsString()
+  @MinLength(8)
+  password: string;
 }

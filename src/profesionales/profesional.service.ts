@@ -94,6 +94,9 @@ export class ProfesionalService {
           "phoneNumber",
           "ciudad",
           "estado",
+          "genero",
+          "fecha_nacimiento",	
+          "pais",
         ], // Excluir password
       });
     } catch (error) {

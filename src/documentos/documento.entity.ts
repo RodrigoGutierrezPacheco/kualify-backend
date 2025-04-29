@@ -7,13 +7,16 @@ export class Documento {
   id: string;
 
   @Column()
-  tipo: 'acta_nacimiento' | 'comprobante_domicilio' | 'constancia_fiscal' | 'ine_pasaporte';
+  tipo: 'acta_nacimiento' | 'comprobante_domicilio' | 'constancia_fiscal' | 'ine_pasaporte' | 'profile_image';
 
   @Column()
   url: string;
 
   @Column({ default: false })
   auditado: boolean;
+
+  @Column({ nullable: true })
+  comentario: string;
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   fecha_subida: Date;

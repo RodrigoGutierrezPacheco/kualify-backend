@@ -19,10 +19,19 @@ export class Profesional {
   @Column()
   profesionalname: string;
 
-  @Column({nullable: true})
+  @Column({nullable: true, default:"México"})
+  pais: string;
+
+  @Column({nullable: true, default:null})
+  fecha_nacimiento: string;
+
+  @Column({nullable: true, default:null})
+  genero: string;
+
+  @Column({nullable: true, default:null})
   estado: string;
 
-  @Column({nullable: true})
+  @Column({nullable: true, default:null})
   ciudad: string;
 
   @Column({ default: 'profesional' })
