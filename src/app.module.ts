@@ -12,6 +12,8 @@ import { AdminsModule } from './administradores/admins.module';
 import { CloudinaryModule } from "./cloudinary/cloudinaty.module";
 import { JwtAuthGuard } from "./auth/guards/jwt-auth.guard";
 import { UbicacionesModule } from "./ubicaciones/ubicaciones.module";
+import { OpenaiModule } from './openai/openai.module';
+import { ProfesionesModule } from "./professions/professions.module";
 
 @Module({
   imports: [
@@ -26,7 +28,9 @@ import { UbicacionesModule } from "./ubicaciones/ubicaciones.module";
     ClientesModule,
     AdminsModule,
     CloudinaryModule,
-    UbicacionesModule
+    UbicacionesModule,
+    OpenaiModule,
+    ProfesionesModule
   ],
   controllers: [AppController],
   providers: [

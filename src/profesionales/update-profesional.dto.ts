@@ -5,6 +5,7 @@ import {
   IsString,
   MinLength,
   IsDateString,
+  IsArray,
 } from "class-validator";
 import { Type } from "class-transformer";
 
@@ -17,4 +18,10 @@ export class UptateProfesionalDto extends PartialType(CreateProfesionalDto) {
   @IsOptional()
   @IsDateString()
   fecha_nacimiento?: string;
+
+  @IsOptional()
+  @IsArray()
+  @Type(() => String)
+  especialidades?: string[];
+
 }

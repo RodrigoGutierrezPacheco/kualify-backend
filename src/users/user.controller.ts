@@ -25,6 +25,7 @@ import { Public } from "src/auth/decorators/public.decorator";
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
+  @Public()
   @Post()
   async create(@Body() createUserDto: CreateUserDto, @Res() res: Response) {
     try {

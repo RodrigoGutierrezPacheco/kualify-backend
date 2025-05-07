@@ -20,6 +20,7 @@ import { UptateProfesionalDto } from "./update-profesional.dto";
 import { Response } from "express";
 import { Profesional } from "./profesional.entity";
 import { Public } from "src/auth/decorators/public.decorator";
+import { AsignarProfesionDto } from "./asignar-profesion.dto";
 
 @Controller("profesionals")
 export class ProfesionalsController {
@@ -194,6 +195,30 @@ export class ProfesionalsController {
         error: error.name || 'Internal Server Error',
       });
     }
+  }
+
+  // Agregar una profesion a un profesional
+  @Post(':id/profesion')
+  async asignarProfesion(
+    @Param('id') id: string,
+    @Body() asignarDto: AsignarProfesionDto
+  ) {
+    return this.profesionalsService.asignarOcrearProfesion(id, asignarDto);
+  }
+
+  // Asignar especialidades a un profesional
+  @Post(':id/especialidades')
+  async asignarEspecialidades(
+    @Param('id') id: string,
+    @Body() especialidades: string[],
+    @Res() res: Response,
+  ) {
+    const profesional = await this.profesionalsService.asignarEspecialidades(id, especialidades);
+    return res.status(HttpStatus.OK).json({
+      statusCode: HttpStatus.OK,
+      message: 'Especialidades asignadas con éxito',
+      data:especialidades,
+    });
   }
 
   // Método para eliminar información sensible antes de enviar al cliente

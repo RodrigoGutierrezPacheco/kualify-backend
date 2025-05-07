@@ -1,6 +1,7 @@
-import { Entity, PrimaryGeneratedColumn, Column , OneToMany} from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column , OneToMany, ManyToOne, JoinColumn} from "typeorm";
 import { Documento } from "src/documentos/documento.entity";
 import { v4 as uuidv4 } from 'uuid';
+import { Profession } from './../professions/professions.entity';
 
 @Entity()
 export class Profesional {
@@ -45,6 +46,16 @@ export class Profesional {
 
   @Column({default: false})
   auditado: boolean
+
+  @Column({ nullable: true })
+  originalProfession: string; // Opcional: guardar lo que el usuario ingresó
+
+  @ManyToOne(() => Profession, { eager: true })
+  @JoinColumn({ name: 'profesion_id' })
+  profesion: Profession;
+
+  @Column('jsonb', { nullable: true })
+  especialidades: string[];
 
   constructor(){
     if(!this.id){

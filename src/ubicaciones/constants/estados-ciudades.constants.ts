@@ -1433,7 +1433,6 @@ export const ESTADOS_CIUDADES: EstadoConCiudadesDto[] = [
       "Xalisco",
 
       // Pueblos Mágicos
-      "Jala",
       "Mexcaltitán",
 
       // Playas y destinos turísticos
