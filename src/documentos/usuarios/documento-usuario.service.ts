@@ -1,39 +1,39 @@
 import { Injectable, NotFoundException ,BadRequestException} from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
-import { Documento, DocumentoConProfesionalDto } from "./documento.entity";
-import { CloudinaryService } from "../cloudinary/cloudinary.service";
-import { Profesional } from "src/profesionales/profesional.entity";
+import { Documento, DocumentoConUsuarioDto } from "./documento-usuario.entity";
+import { CloudinaryService } from "src/cloudinary/cloudinary.service";
+import { User } from "src/users/user.entity";
 
 @Injectable()
 export class DocumentoService {
   constructor(
     @InjectRepository(Documento)
     private documentoRepository: Repository<Documento>,
-    @InjectRepository(Profesional)
-    private profesionalRepository: Repository<Profesional>,
+    @InjectRepository(User)
+    private userRepository: Repository<User>,
     private cloudinaryService: CloudinaryService
   ) {}
 
   // Se suben los archivos, si se encuentra un archivo ya existente se sustituye y elimina el anterior
   async subirDocumento(
-    profesionalId: string,
+    userId: string,
     file: Express.Multer.File,
     tipo: string
   ): Promise<Documento> {
-    const profesional = await this.profesionalRepository.findOneBy({
-      id: profesionalId,
+    const usuario = await this.userRepository.findOneBy({
+      id: userId,
     });
   
-    if (!profesional) {
-      throw new Error("Profesional no encontrado");
+    if (!usuario) {
+      throw new Error("Usuario no encontrado");
     }
   
     // Buscar documento existente
     const documentoExistente = await this.documentoRepository.findOne({
       where: {
-        profesional: {
-          id: profesionalId,
+        usuario: {
+          id: userId,
         },
         tipo: tipo as any,
       },
@@ -65,7 +65,7 @@ export class DocumentoService {
       tipo: tipo as any,
       url,
       auditado: false,
-      profesional,
+      usuario,
     });
   
     return this.documentoRepository.save(documento);
@@ -75,7 +75,7 @@ export class DocumentoService {
     // 1. Buscar el documento
     const documento = await this.documentoRepository.findOne({
       where: { id: documentoId },
-      relations: ["profesional"],
+      relations: ["usuario"],
     });
 
     if (!documento) {
@@ -98,39 +98,39 @@ export class DocumentoService {
     await this.documentoRepository.remove(documento);
   }
 
-  async obtenerDocumentosPorProfesional(
-    profesionalId: string
-  ): Promise<DocumentoConProfesionalDto[]> {
-    // Verificar si el profesional existe
-    const profesional = await this.profesionalRepository.findOne({
-      where: { id: profesionalId },
+  async obtenerDocumentosPorUsuario(
+    usuarioId: string
+  ): Promise<DocumentoConUsuarioDto[]> {
+    // Verificar si el usuario existe
+    const usuario = await this.userRepository.findOne({
+      where: { id: usuarioId },
     });
 
-    if (!profesional) {
+    if (!usuario) {
       throw new NotFoundException(
-        `Profesional con ID ${profesionalId} no existe`
+        `Usuario con ID ${usuarioId} no existe`
       );
     }
 
     // Buscar los documentos
     const documentos = await this.documentoRepository.find({
-      where: { profesional: { id: profesionalId } },
-      relations: ["profesional"],
+      where: { usuario: { id: usuarioId } },
+      relations: ["usuario"],
     });
 
     if (!documentos || documentos.length === 0) {
       throw new NotFoundException(
-        `No se encontraron documentos para el profesional con ID ${profesionalId}`
+        `No se encontraron documentos para el usuario con ID ${usuarioId}`
       );
     }
 
     // Mapear a DTO
     return documentos.map((documento) => ({
       ...documento,
-      profesional: {
-        id: documento.profesional.id,
-        email: documento.profesional.email,
-        profesionalname: documento.profesional.profesionalname,
+      usuario: {
+        id: documento.usuario.id,
+        email: documento.usuario.email,
+        username: documento.usuario.username,
       },
     }));
   }

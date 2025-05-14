@@ -1,5 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column , OneToMany, ManyToOne, JoinColumn} from "typeorm";
-import { Documento } from "src/documentos/documento.entity";
+import { Documento } from "src/documentos/profesional/documento.entity";
 import { v4 as uuidv4 } from 'uuid';
 import { Profession } from './../professions/professions.entity';
 

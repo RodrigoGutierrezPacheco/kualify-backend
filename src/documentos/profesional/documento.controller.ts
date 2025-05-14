@@ -12,12 +12,13 @@ import {
   Delete,
   Get,
   Patch,
-  ParseIntPipe, // Nuevo decorador para operaciones de actualización parcial
+  ParseIntPipe,
 } from "@nestjs/common";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { DocumentoService } from "./documento.service";
 import { UploadDocumentoDto } from "./upload-documento.dto";
 import { AuditarDocumentoDto } from "./auditar-documento.dto";
+import { ApiOperation, ApiResponse, ApiParam, ApiBody } from "@nestjs/swagger";
 
 @Controller("profesionales/:id/documentos")
 export class DocumentosController {
@@ -29,6 +30,24 @@ export class DocumentosController {
       limits: { fileSize: 10 * 1024 * 1024 }, // 10MB
     })
   )
+  @ApiOperation({ summary: 'Sube un documento para un profesional.' })
+  @ApiResponse({
+    status: 201,
+    description: 'Documento subido correctamente.',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Error al subir el documento.',
+  })
+  @ApiBody({
+    description: 'Los datos del documento a subir.',
+    type: UploadDocumentoDto,
+  })
+  @ApiParam({
+    name: 'id',
+    description: 'ID del profesional al que se le asociará el documento.',
+    type: String,
+  })
   async uploadDocumento(
     @Param("id", ParseUUIDPipe) id: string,
     @UploadedFile() file: Express.Multer.File,
@@ -45,6 +64,20 @@ export class DocumentosController {
   }
 
   @Delete(":documentoId")
+  @ApiOperation({ summary: 'Elimina un documento por su ID.' })
+  @ApiResponse({
+    status: 200,
+    description: 'Documento eliminado correctamente.',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Documento no encontrado.',
+  })
+  @ApiParam({
+    name: 'documentoId',
+    description: 'ID del documento a eliminar.',
+    type: String,
+  })
   async eliminarDocumento(
     @Param("documentoId", ParseIntPipe) documentoId: string
   ) {
@@ -60,11 +93,43 @@ export class DocumentosController {
   }
 
   @Get()
+  @ApiOperation({ summary: 'Lista los documentos de un profesional.' })
+  @ApiResponse({
+    status: 200,
+    description: 'Lista de documentos obtenida correctamente.',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Profesional no encontrado.',
+  })
+  @ApiParam({
+    name: 'id',
+    description: 'ID del profesional para obtener sus documentos.',
+    type: String,
+  })
   async listarDocumentos(@Param("id", ParseUUIDPipe) profesionalId: string) {
     return this.documentoService.obtenerDocumentosPorProfesional(profesionalId);
   }
 
-  @Patch(":documentoId/auditar") 
+  @Patch(":documentoId/auditar")
+  @ApiOperation({ summary: 'Marca un documento como auditado.' })
+  @ApiResponse({
+    status: 200,
+    description: 'Documento auditado correctamente.',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Error al actualizar el estado de auditoría.',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Documento no encontrado.',
+  })
+  @ApiParam({
+    name: 'documentoId',
+    description: 'ID del documento a auditar.',
+    type: String,
+  })
   async marcarComoAuditado(
     @Param("id", ParseUUIDPipe) profesionalId: string,
     @Param("documentoId") documentoId: string,

@@ -8,23 +8,27 @@ import {
   Delete,
   HttpStatus,
   Res,
-  Query,
   ParseUUIDPipe,
   NotFoundException,
   ConflictException,
   Put,
 } from "@nestjs/common";
+import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBody } from "@nestjs/swagger";
 import { AdminService } from "./admins.service";
 import { CreateAdminDto } from "./create-admin.dto";
 import { UpdateAdminDto } from "./update-admin.dto";
 import { Response } from "express";
 import { Admin } from "./admin.entity";
 
+@ApiTags("Admins")
 @Controller("admins")
 export class AdminsController {
   constructor(private readonly AdminsService: AdminService) {}
 
   @Post()
+  @ApiOperation({ summary: "Crear un nuevo administrador" })
+  @ApiResponse({ status: 201, description: "Administrador creado con éxito" })
+  @ApiResponse({ status: 409, description: "Conflicto al crear el administrador" })
   async create(@Body() CreateAdminDto: CreateAdminDto, @Res() res: Response) {
     try {
       const admin = await this.AdminsService.create(CreateAdminDto);
@@ -47,6 +51,8 @@ export class AdminsController {
   }
 
   @Get()
+  @ApiOperation({ summary: "Obtener todos los administradores" })
+  @ApiResponse({ status: 200, description: "Admins obtenidos con éxito" })
   async findAll(@Res() res: Response) {
     try {
       const users = await this.AdminsService.findAll();
@@ -65,6 +71,10 @@ export class AdminsController {
   }
 
   @Get(":id")
+  @ApiOperation({ summary: "Obtener un administrador por ID" })
+  @ApiParam({ name: "id", type: "string", description: "UUID del administrador" })
+  @ApiResponse({ status: 200, description: "Administrador obtenido con éxito" })
+  @ApiResponse({ status: 404, description: "Administrador no encontrado" })
   async findOne(@Param("id", ParseUUIDPipe) id: string, @Res() res: Response) {
     try {
       const user = await this.AdminsService.findById(id);
@@ -91,6 +101,11 @@ export class AdminsController {
   }
 
   @Patch(":id")
+  @ApiOperation({ summary: "Actualizar un administrador por ID" })
+  @ApiParam({ name: "id", type: "string", description: "UUID del administrador" })
+  @ApiBody({ type: UpdateAdminDto })
+  @ApiResponse({ status: 200, description: "Administrador actualizado con éxito" })
+  @ApiResponse({ status: 404, description: "Administrador no encontrado" })
   async update(
     @Param("id", ParseUUIDPipe) id: number,
     @Body() updateUserDto: UpdateAdminDto,
@@ -117,6 +132,10 @@ export class AdminsController {
   }
 
   @Delete(":id")
+  @ApiOperation({ summary: "Eliminar un administrador por ID" })
+  @ApiParam({ name: "id", type: "string", description: "UUID del administrador" })
+  @ApiResponse({ status: 200, description: "Administrador eliminado con éxito" })
+  @ApiResponse({ status: 500, description: "Error del servidor" })
   async remove(@Param("id", ParseUUIDPipe) id: number, @Res() res: Response) {
     try {
       await this.AdminsService.remove(id);
@@ -135,9 +154,14 @@ export class AdminsController {
   }
 
   @Put(":id/status")
+  @ApiOperation({ summary: "Cambiar el estado del administrador" })
+  @ApiParam({ name: "id", type: "string", description: "UUID del administrador" })
+  @ApiBody({ schema: { type: "object", properties: { status: { type: "boolean" } } } })
+  @ApiResponse({ status: 200, description: "Estado actualizado con éxito" })
+  @ApiResponse({ status: 404, description: "Administrador no encontrado" })
   async changeStatus(
     @Param("id", ParseUUIDPipe) id: string,
-    @Body("status")status: boolean,
+    @Body("status") status: boolean,
     @Res() res: Response
   ) {
     try {
@@ -161,7 +185,6 @@ export class AdminsController {
     }
   }
 
-  // Método para eliminar información sensible antes de enviar al cliente
   private sanitizeAdmin(admin: Admin): Partial<Admin> {
     const { password, ...sanitizeAdmin } = admin;
     return sanitizeAdmin;

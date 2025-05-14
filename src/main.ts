@@ -1,7 +1,8 @@
 import { NestFactory } from "@nestjs/core";
 import { AppModule } from "./app.module";
 import { ConfigService } from "@nestjs/config";
-import { ValidationPipe } from '@nestjs/common'; // Importa ValidationPipe
+import { ValidationPipe } from '@nestjs/common';
+import { SwaggerModule, DocumentBuilder } from "@nestjs/swagger";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -21,19 +22,48 @@ async function bootstrap() {
     credentials: true,
   });
 
-  // Agrega el ValidationPipe global
+  // Configuración de Swagger
+  const swaggerConfig = new DocumentBuilder()
+    .setTitle('Kualify API')
+    .setDescription('API completa para la plataforma Kualify')
+    .setVersion('1.0')
+    .addBearerAuth(
+      {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+        name: 'JWT',
+        description: 'Ingrese el token JWT',
+        in: 'header',
+      },
+      'JWT-auth', // Este nombre debe coincidir con el usado en @ApiBearerAuth()
+    )
+    .build();
+
+  const document = SwaggerModule.createDocument(app, swaggerConfig);
+  SwaggerModule.setup('api/docs', app, document, {
+    swaggerOptions: {
+      persistAuthorization: true, // Mantiene el token en sesión
+      tagsSorter: 'alpha', // Ordena los tags alfabéticamente
+      operationsSorter: 'alpha', // Ordena las operaciones alfabéticamente
+    },
+    customSiteTitle: 'Kualify API Documentation',
+  });
+
+  // Global Validation Pipe
   app.useGlobalPipes(
     new ValidationPipe({
-      whitelist: true,               // Elimina propiedades no incluidas en el DTO
-      forbidNonWhitelisted: true,    // Rechaza requests con propiedades no permitidas
-      transform: true,               // Transforma los tipos automáticamente
-      disableErrorMessages: false,   // Habilita mensajes de error detallados
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
+      disableErrorMessages: false,
     })
   );
 
   await app.listen(port, () => {
     console.log("=================================");
     console.log(`🚀 Backend running on port ${port}`);
+    console.log(`📚 Swagger docs: http://localhost:${port}/api/docs`);
     console.log("📦 Database configuration:");
     console.log(`   Host: ${dbHost}`);
     console.log(`   Port: ${dbPort}`);

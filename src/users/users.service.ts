@@ -92,7 +92,7 @@ export class UsersService {
     try {
       return await this.usersRepository.findOne({
         where: { id },
-        select: ["id", "email", "username", "role", "phoneNumber"], // Excluir password
+        select: ["id", "email", "username", "role", "phoneNumber", "ciudad", "estado", "genero", "fecha_nacimiento"], // Excluir password
       });
     } catch (error) {
       throw new Error(`Error al buscar usuario: ${error.message}`);

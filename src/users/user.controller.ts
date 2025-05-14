@@ -9,11 +9,11 @@ import {
   Put,
   HttpStatus,
   Res,
-  Query,
   ParseUUIDPipe,
   NotFoundException,
   ConflictException,
 } from "@nestjs/common";
+import { ApiTags, ApiOperation, ApiResponse, ApiBody, ApiParam } from "@nestjs/swagger";
 import { UsersService } from "./users.service";
 import { CreateUserDto } from "./create-user.dto";
 import { UpdateUserDto } from "./update-user.dto";
@@ -21,12 +21,17 @@ import { Response } from "express";
 import { User } from "./user.entity";
 import { Public } from "src/auth/decorators/public.decorator";
 
+@ApiTags("Users")
 @Controller("users")
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Public()
   @Post()
+  @ApiOperation({ summary: "Crear un nuevo usuario" })
+  @ApiResponse({ status: 201, description: "Usuario creado con éxito" })
+  @ApiResponse({ status: 409, description: "Conflicto al crear el usuario" })
+  @ApiBody({ type: CreateUserDto })
   async create(@Body() createUserDto: CreateUserDto, @Res() res: Response) {
     try {
       const user = await this.usersService.create(createUserDto);
@@ -50,6 +55,8 @@ export class UsersController {
   }
 
   @Get()
+  @ApiOperation({ summary: "Obtener todos los usuarios" })
+  @ApiResponse({ status: 200, description: "Usuarios obtenidos con éxito" })
   async findAll(@Res() res: Response) {
     try {
       const users = await this.usersService.findAll();
@@ -68,6 +75,10 @@ export class UsersController {
   }
 
   @Get(":id")
+  @ApiOperation({ summary: "Obtener un usuario por ID" })
+  @ApiParam({ name: "id", description: "ID del usuario", type: String })
+  @ApiResponse({ status: 200, description: "Usuario obtenido con éxito" })
+  @ApiResponse({ status: 404, description: "Usuario no encontrado" })
   async findOne(@Param("id", ParseUUIDPipe) id: string, @Res() res: Response) {
     try {
       const user = await this.usersService.findById(id);
@@ -94,6 +105,10 @@ export class UsersController {
   }
 
   @Patch(":id")
+  @ApiOperation({ summary: "Actualizar un usuario" })
+  @ApiParam({ name: "id", description: "ID del usuario", type: String })
+  @ApiBody({ type: UpdateUserDto })
+  @ApiResponse({ status: 200, description: "Usuario actualizado con éxito" })
   async update(
     @Param("id", ParseUUIDPipe) id: string,
     @Body() updateUserDto: UpdateUserDto,
@@ -120,6 +135,9 @@ export class UsersController {
   }
 
   @Delete(":id")
+  @ApiOperation({ summary: "Eliminar un usuario por ID" })
+  @ApiParam({ name: "id", description: "ID del usuario", type: String })
+  @ApiResponse({ status: 200, description: "Usuario eliminado con éxito" })
   async remove(@Param("id", ParseUUIDPipe) id: string, @Res() res: Response) {
     try {
       await this.usersService.remove(id);
@@ -137,8 +155,12 @@ export class UsersController {
     }
   }
 
-  // Metodo para cambiar el status
   @Put(":id/status")
+  @ApiOperation({ summary: "Cambiar el estado del usuario" })
+  @ApiParam({ name: "id", description: "ID del usuario", type: String })
+  @ApiBody({ schema: { example: { status: true } } })
+  @ApiResponse({ status: 200, description: "Estado del usuario actualizado con éxito" })
+  @ApiResponse({ status: 404, description: "Usuario no encontrado" })
   async changeStatus(
     @Param("id", ParseUUIDPipe) id: string,
     @Body("status") status: boolean,
@@ -165,7 +187,6 @@ export class UsersController {
     }
   }
 
-  // Método para eliminar información sensible antes de enviar al cliente
   private sanitizeUser(user: User): Partial<User> {
     const { password, ...sanitizedUser } = user;
     return sanitizedUser;
